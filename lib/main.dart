@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:weatherapp/pretentation/home/home_weather_cubit.dart';
-import 'package:weatherapp/pretentation/home/home_weather_screen.dart';
 
+import 'features/pretentation/auto_location/auto_location_cubit.dart';
+import 'features/pretentation/auto_location/auto_location_screen.dart';
+import 'features/pretentation/home/home_cubit.dart';
+import 'features/pretentation/home/home_screen.dart';
 import 'injection.dart';
 
 Future<void> main() async {
@@ -14,20 +16,28 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-
+  
+  
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => locator<HomeWeatherCubit>(),
+    return  SafeArea(
       child: MaterialApp(
         theme: ThemeData(
           fontFamily: 'SFPro',
+          scaffoldBackgroundColor: Colors.black,
         ),
         debugShowCheckedModeBanner: false,
-        home: HomeWeatherScreen(),
+        home: BlocProvider(
+          create: (context) => locator<HomeCubit>(),
+          child: HomeScreen(),
+        ),
+        routes: {
+          '/search': (context) => BlocProvider(
+            create: (context) => locator<AutoLocationCubit>(),
+            child: AutoLocationScreen(),
+          ),
+        },
       ),
     );
   }
-
 }

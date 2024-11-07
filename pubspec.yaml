@@ -17,6 +17,7 @@ dependencies:
   flutter_bloc: ^8.1.6
   equatable: ^2.0.5
   flutter_dotenv: ^5.2.1
+  flutter_svg: ^2.0.13
   dio: ^5.7.0
   dartz: ^0.10.1
 
@@ -34,6 +35,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/svg/
     - assets/gif/loading.gif
     - .env
 
