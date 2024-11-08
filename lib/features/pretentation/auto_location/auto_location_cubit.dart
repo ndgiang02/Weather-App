@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/utils/load_status.dart';
 import '../../domain/entities/auto_location.dart';
+import '../../domain/entities/weather.dart';
 import '../../domain/usecases/get_auto.dart';
+import '../../domain/usecases/get_weather.dart';
 
 part 'auto_location_state.dart';
 
@@ -11,15 +13,30 @@ class AutoLocationCubit extends Cubit<AutoLocationState> {
 
   final GetAutoUseCase getAutoUseCase;
 
-  AutoLocationCubit({required this.getAutoUseCase}) : super(AutoLocationState());
+  final GetWeatherUseCase getWeatherUseCase;
 
-  Future<void> getAutoLoacation(String query) async {
+
+  AutoLocationCubit(this.getWeatherUseCase, {required this.getAutoUseCase})
+      : super(const AutoLocationState());
+
+  Future<void> getAutoLocation(String query) async {
     emit(state.copyWith(status: LoadStatus.Loading));
     try {
-      final List<LocationSuggestionEntity> suggestions = await getAutoUseCase.execute(query);
+      final List<LocationSuggestionEntity> suggestions =
+          await getAutoUseCase.execute(query);
       emit(state.copyWith(status: LoadStatus.Done, suggestions: suggestions));
     } catch (e) {
       emit(state.copyWith(status: LoadStatus.Error));
+    }
+  }
+
+  Future<void> fetchWeather(double lat, double lon) async {
+    emit(state.copyWith(status: LoadStatus.Loading));
+    try {
+      final weather = await getWeatherUseCase.execute(lat, lon);
+      emit(state.copyWith(status: LoadStatus.Done, weather: weather));
+    } catch (e) {
+      emit(state.copyWith(status: LoadStatus.Error, errMsg: e.toString()));
     }
   }
 }

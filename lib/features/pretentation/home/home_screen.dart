@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:weatherapp/core/utils/load_status.dart';
 
 import '../../../../core/utils/textstyle.dart';
 import 'home_cubit.dart';
@@ -71,20 +70,18 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       style: const TextStyle(fontSize: 16),
-                      onChanged: (query) {
-                        //context.read<AutoLocationCubit>().getAuto(query);
-                      },
                     ),
-                    BlocBuilder<HomeCubit, HomeState>(
+                   /* BlocBuilder<HomeCubit, HomeState>(
                       builder: (context, state) {
                         if (state.status == LoadStatus.Loading) {
-                          return  Image.asset(
+                          return Image.asset(
                             'assets/gif/loading.gif',
                             height: 50,
                             width: 50,
                           );
                         } else if (state.status == LoadStatus.Error) {
-                          return const Center(child: Text('Không có thong tin'));
+                          return const Center(
+                              child: Text('Không có thong tin'));
                         } else if (state.status == LoadStatus.Done &&
                             state.weather != null) {
                           return Column(
@@ -94,15 +91,15 @@ class HomeScreen extends StatelessWidget {
                                 onPressed: () {
                                   //context.read<HomeCubit>().addWeatherToList();
                                 },
-                                child: const Text('Thêm vào danh sách yêu thích'),
+                                child: const Text('Thêm'),
                               ),
                             ],
                           );
                         } else {
-                          return const Center(child: Text('Không có dữ liệu.'));
+                          return const Center();
                         }
                       },
-                    ),
+                    ),*/
                   ],
                 );
               },

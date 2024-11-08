@@ -37,9 +37,10 @@ class WeatherResponseModel extends WeatherResponseEntity {
       lon: lon,
       timezone: timezone,
       timezoneOffset: timezoneOffset,
-      current: current,
-      hourly: hourly,
-      daily: daily,
+      current: (current as CurrentWeatherModel).toEntity(),
+      hourly: hourly.map((hour) => (hour as HourlyWeatherModel).toEntity()).toList(),
+      daily: daily.map((day) => (day as DailyWeatherModel).toEntity()).toList(),
     );
   }
+
 }

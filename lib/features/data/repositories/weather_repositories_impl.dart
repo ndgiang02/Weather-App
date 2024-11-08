@@ -9,7 +9,8 @@ class WeatherRepositoryImpl implements WeatherRepository {
 
   @override
   Future<WeatherResponseEntity> getWeatherLocation(double lat, double lon) async {
-    return await weatherDataSource.getWeather(lat, lon);
+    final result = await weatherDataSource.getWeather(lat, lon);
+    return result.toEntity();
   }
 
 }

@@ -9,6 +9,7 @@ import 'features/pretentation/home/home_screen.dart';
 import 'injection.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
   setupLocator();
   runApp(const MyApp());
@@ -27,14 +28,19 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.black,
         ),
         debugShowCheckedModeBanner: false,
-        home: BlocProvider(
+       /* home: BlocProvider(
           create: (context) => locator<HomeCubit>(),
           child: HomeScreen(),
-        ),
+        ),*/
+        initialRoute: '/',
         routes: {
+          '/': (context) => BlocProvider(
+            create: (context) => locator<HomeCubit>(),
+            child: HomeScreen(),
+          ),
           '/search': (context) => BlocProvider(
             create: (context) => locator<AutoLocationCubit>(),
-            child: AutoLocationScreen(),
+            child: const AutoLocationScreen(),
           ),
         },
       ),

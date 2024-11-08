@@ -42,7 +42,7 @@ void setupLocator() {
   // Đăng ký các Cubit
   locator.registerFactory<HomeCubit>(() => HomeCubit(getWeatherUseCase: locator()));
 
-  locator.registerFactory<AutoLocationCubit>(() => AutoLocationCubit(getAutoUseCase: locator()));
+  locator.registerFactory<AutoLocationCubit>(() => AutoLocationCubit(locator<GetWeatherUseCase>(), getAutoUseCase: locator()));
 
 
 /*  // data source

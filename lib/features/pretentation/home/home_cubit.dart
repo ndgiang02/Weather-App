@@ -10,6 +10,8 @@ class HomeCubit extends Cubit<HomeState> {
 
   final GetWeatherUseCase getWeatherUseCase;
 
+
+
   HomeCubit({required this.getWeatherUseCase}) : super(const HomeState());
 
   Future<void> fetchWeather(double lat, double lon) async {

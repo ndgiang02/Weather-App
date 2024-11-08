@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import '../../../../core/constant/constant.dart';
@@ -21,14 +22,17 @@ class WeatherRemoteDataSourceImpl implements WeatherRemoteDataSource {
       host: kApiHost,
       path: 'data/3.0/onecall',
       queryParameters: {
-        'lat': lat,
-        'lon': lon,
+        'lat': lat.toString(),
+        'lon': lon.toString(),
         'appid': dotenv.env['APPID'],
       },
     );
 
     final response = await client.get(geocodingUri);
     if (response.statusCode == 200) {
+      if (kDebugMode) {
+        print(response);
+      }
       return WeatherResponseModel.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load current weather');
