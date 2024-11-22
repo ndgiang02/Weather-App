@@ -30,11 +30,11 @@ class AutoLocationCubit extends Cubit<AutoLocationState> {
     }
   }
 
-  Future<void> fetchWeather(double lat, double lon) async {
+  Future<void> fetchWeather(double lat, double lon, String cityName) async {
     emit(state.copyWith(status: LoadStatus.Loading));
     try {
       final weather = await getWeatherUseCase.execute(lat, lon);
-      emit(state.copyWith(status: LoadStatus.Done, weather: weather));
+      emit(state.copyWith(status: LoadStatus.Done, weather: weather, cityName: cityName));
     } catch (e) {
       emit(state.copyWith(status: LoadStatus.Error, errMsg: e.toString()));
     }

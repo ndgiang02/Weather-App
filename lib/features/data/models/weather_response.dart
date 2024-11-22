@@ -1,4 +1,5 @@
 import '../../domain/entities/weather.dart';
+import 'alert_weather_model.dart';
 import 'current_weather_model.dart';
 import 'daily_weather_model.dart';
 import 'hourly_weather_model.dart';
@@ -13,6 +14,7 @@ class WeatherResponseModel extends WeatherResponseEntity {
     required super.current,
     required super.hourly,
     required super.daily,
+    //required super.alert
   });
 
   factory WeatherResponseModel.fromJson(Map<String, dynamic> json) {
@@ -22,6 +24,7 @@ class WeatherResponseModel extends WeatherResponseEntity {
       timezone: json['timezone'],
       timezoneOffset: json['timezone_offset'],
       current: CurrentWeatherModel.fromJson(json['current']),
+      //alert: AlertWeatherModel.fromJson(json['alert']),
       hourly: (json['hourly'] as List)
           .map((hour) => HourlyWeatherModel.fromJson(hour))
           .toList(),
@@ -38,6 +41,7 @@ class WeatherResponseModel extends WeatherResponseEntity {
       timezone: timezone,
       timezoneOffset: timezoneOffset,
       current: (current as CurrentWeatherModel).toEntity(),
+    //  alert: (alert as AlertWeatherModel).toEntity(),
       hourly: hourly.map((hour) => (hour as HourlyWeatherModel).toEntity()).toList(),
       daily: daily.map((day) => (day as DailyWeatherModel).toEntity()).toList(),
     );

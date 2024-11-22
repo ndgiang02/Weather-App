@@ -10,4 +10,6 @@ class GetWeatherUseCase {
   Future<WeatherResponseEntity> execute(double lat, double lon) {
     return repository.getWeatherLocation(lat, lon);
   }
+
+
 }

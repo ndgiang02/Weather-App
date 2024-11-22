@@ -40,7 +40,7 @@ void setupLocator() {
   locator.registerLazySingleton<GetAutoUseCase>(() => GetAutoUseCase(locator()));
 
   // Đăng ký các Cubit
-  locator.registerFactory<HomeCubit>(() => HomeCubit(getWeatherUseCase: locator()));
+  locator.registerFactory<HomeCubit>(() => HomeCubit(getWeatherUseCase: locator(), locator<GetAutoUseCase>()));
 
   locator.registerFactory<AutoLocationCubit>(() => AutoLocationCubit(locator<GetWeatherUseCase>(), getAutoUseCase: locator()));
 

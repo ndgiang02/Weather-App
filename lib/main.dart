@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.black,
         ),
         debugShowCheckedModeBanner: false,
-       /* home: BlocProvider(
+        /*home: BlocProvider(
           create: (context) => locator<HomeCubit>(),
           child: HomeScreen(),
         ),*/
