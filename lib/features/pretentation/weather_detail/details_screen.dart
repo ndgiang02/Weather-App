@@ -3,8 +3,10 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'package:weatherapp/features/pretentation/home/home_cubit.dart';
 
 import '../../../../core/utils/textstyle.dart';
 import '../../domain/entities/weather.dart';
@@ -18,6 +20,8 @@ class DetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           Container(
@@ -30,126 +34,162 @@ class DetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Overlay mờ
           Container(
             color: Colors.black.withOpacity(0.5),
           ),
-          CustomScrollView(
-            slivers: [
-              SliverPersistentHeader(
-                pinned: false,
-                delegate: _CustomSliverHeaderDelegate(
-                  minHeight: 50,
-                  maxHeight: 300,
-                  childBuilder: (context, shrinkOffset, overlapsContent) {
-                    final opacity = 1 - (shrinkOffset / 250).clamp(0.0, 1.0);
-                    return Opacity(
-                      opacity: opacity,
+
+          // NestedScrollView với SliverAppBar
+          NestedScrollView(
+            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              return [
+                SliverAppBar(
+                  expandedHeight: 300.0,
+                  pinned: true,
+                  floating: true,
+                  backgroundColor: Colors.transparent,
+                  flexibleSpace: LayoutBuilder(
+                    builder: (BuildContext context, BoxConstraints constraints) {
+                      double shrinkOffset = constraints.maxHeight - kToolbarHeight;
+                      bool isCollapsed = shrinkOffset < 100;
+                      return FlexibleSpaceBar(
+                        centerTitle: true,
+                        title: isCollapsed
+                            ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              cityName,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              '${convert(weather.current.temp)} | ${weather.current.weather.description}',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        )
+                            : null,
+                        background: SafeArea(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: _buildWeatherDetails(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ];
+            },
+            body: CustomScrollView(
+              slivers: [
+
+
+                SliverPersistentHeader(
+                  pinned: false,
+                  delegate: _CustomSliverHeaderDelegate(
+                    minHeight: 50,
+                    maxHeight: 200,
+                    childBuilder: (context, shrinkOffset, overlapsContent) {
+                      final opacity = 1 - (shrinkOffset / 450).clamp(0.0, 1.0);
+                      return Opacity(
+                        opacity: opacity,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                          child: _buildWeatherDetails(),
+                          child: _buildHourlyForecast(),
                         ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
 
-              SliverPersistentHeader(
-                pinned: false,
-                delegate: _CustomSliverHeaderDelegate(
-                  minHeight: 50,
-                  maxHeight: 200,
-                  childBuilder: (context, shrinkOffset, overlapsContent) {
-                    final opacity = 1 - (shrinkOffset / 300).clamp(0.0, 1.0);
-                    return Opacity(
-                      opacity: opacity,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                        child: _buildHourlyForecast(),
-                      ),
-                    );
-                  },
+                SliverPersistentHeader(
+                  pinned: false,
+                  delegate: _CustomSliverHeaderDelegate(
+                    minHeight: 50,
+                    maxHeight: 500,
+                    childBuilder: (context, shrinkOffset, overlapsContent) {
+                      final opacity = 1 - (shrinkOffset / 450).clamp(0.0, 1.0);
+                      return Opacity(
+                        opacity: opacity,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                          child: _buildDailyForecast(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
 
-              SliverPersistentHeader(
-                pinned: false,
-                delegate: _CustomSliverHeaderDelegate(
-                  minHeight: 50,
-                  maxHeight: 500,
-                  childBuilder: (context, shrinkOffset, overlapsContent) {
-                    final opacity = 1 - (shrinkOffset / 250).clamp(0.0, 1.0);
-                    return Opacity(
-                      opacity: opacity,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                        child: _buildDailyForecast(),
-                      ),
-                    );
-                  },
+                SliverPersistentHeader(
+                  pinned: false,
+                  delegate: _CustomSliverHeaderDelegate(
+                    minHeight: 50,
+                    maxHeight: 180,
+                    childBuilder: (context, shrinkOffset, overlapsContent) {
+                      final opacity = 1 - (shrinkOffset / 150).clamp(0.0, 1.0);
+                      return Opacity(
+                        opacity: opacity,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16.0),
+                          child: _buildWind(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
 
-              SliverPersistentHeader(
-                pinned: false,
-                delegate: _CustomSliverHeaderDelegate(
-                  minHeight: 50,
-                  maxHeight: 180,
-                  childBuilder: (context, shrinkOffset, overlapsContent) {
-                    final opacity = 1 - (shrinkOffset / 150).clamp(0.0, 1.0);
-                    return Opacity(
-                      opacity: opacity,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16.0),
-                        child: _buildWind(),
-                      ),
-                    );
-                  },
+                SliverPersistentHeader(
+                  pinned: false,
+                  delegate: _CustomSliverHeaderDelegate(
+                    minHeight: 50,
+                    maxHeight: 180,
+                    childBuilder: (context, shrinkOffset, overlapsContent) {
+                      final opacity = 1 - (shrinkOffset / 150).clamp(0.0, 1.0);
+                      return Opacity(
+                        opacity: opacity,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16.0),
+                          child: _buildFeelsLike(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
 
-              SliverPersistentHeader(
-                pinned: false,
-                delegate: _CustomSliverHeaderDelegate(
-                  minHeight: 50,
-                  maxHeight: 180,
-                  childBuilder: (context, shrinkOffset, overlapsContent) {
-                    final opacity = 1 - (shrinkOffset / 150).clamp(0.0, 1.0);
-                    return Opacity(
-                      opacity: opacity,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16.0),
-                        child: _buildFeelsLike(),
-                      ),
-                    );
-                  },
+                SliverPersistentHeader(
+                  pinned: false,
+                  delegate: _CustomSliverHeaderDelegate(
+                    minHeight: 50,
+                    maxHeight: 180,
+                    childBuilder: (context, shrinkOffset, overlapsContent) {
+                      final opacity = 1 - (shrinkOffset / 150).clamp(0.0, 1.0);
+                      return Opacity(
+                        opacity: opacity,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16.0),
+                          child: _buildUvPressure(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-
-              SliverPersistentHeader(
-                pinned: false,
-                delegate: _CustomSliverHeaderDelegate(
-                  minHeight: 50,
-                  maxHeight: 180,
-                  childBuilder: (context, shrinkOffset, overlapsContent) {
-                    final opacity = 1 - (shrinkOffset / 150).clamp(0.0, 1.0);
-                    return Opacity(
-                      opacity: opacity,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16.0),
-                        child: _buildUvPressure(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-            ],
+              ],
+            ),
           ),
         ],
       ),
     );
   }
+
+
 
   Widget _buildWeatherDetails() {
     return ClipRRect(
@@ -201,6 +241,10 @@ class DetailScreen extends StatelessWidget {
                       'L: ${convert(weather.current.temp)} ',
                   style: const TextStyle(color: Colors.white70),
                 ),
+                Text(
+                  '${weather.current.weather.description} ',
+                  style: const TextStyle(color: Colors.white70),
+                ),
               ],
             ),
           ),
@@ -220,13 +264,13 @@ class DetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                 const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Row(
                     children: [
-                      const Icon(Icons.alarm_rounded, color: Colors.white, size: 20),
-                      const SizedBox(width: 8.0),
-                      Text(weather.current.weather.description, style: CustomTextStyles.temper),
+                      Icon(Icons.alarm_rounded, color: Colors.white, size: 20),
+                      SizedBox(width: 8.0),
+                      Text('24-Hours Forecast', style: CustomTextStyles.temper),
                     ],
                   ),
                 ),
@@ -288,7 +332,7 @@ class DetailScreen extends StatelessWidget {
                     children: [
                       Icon(Icons.calendar_today, color: Colors.white, size: 20),
                       SizedBox(width: 8.0),
-                      Text('8-Days', style: CustomTextStyles.note),
+                      Text('8-Days Forecast', style: CustomTextStyles.note),
                     ],
                   ),
                 ),
@@ -874,7 +918,7 @@ class DetailScreen extends StatelessWidget {
 }
 
 String convert(double kelvin) {
-  return '${(kelvin - 273.15).round()}°';
+  return '${(kelvin - 273.15).round()} \u00B0';
 }
 
 

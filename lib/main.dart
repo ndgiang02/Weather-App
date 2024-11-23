@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'features/pretentation/auto_location/auto_location_cubit.dart';
-import 'features/pretentation/auto_location/auto_location_screen.dart';
 import 'features/pretentation/home/home_cubit.dart';
 import 'features/pretentation/home/home_screen.dart';
 import 'injection.dart';
@@ -37,10 +35,6 @@ class MyApp extends StatelessWidget {
           '/': (context) => BlocProvider(
             create: (context) => locator<HomeCubit>(),
             child: HomeScreen(),
-          ),
-          '/search': (context) => BlocProvider(
-            create: (context) => locator<AutoLocationCubit>(),
-            child: const AutoLocationScreen(),
           ),
         },
       ),

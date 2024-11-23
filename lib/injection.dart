@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 
+import 'core/location/location_service.dart';
 import 'features/data/data_source/auto_data_source.dart';
 import 'features/data/data_source/weather_data_source.dart';
 import 'features/data/repositories/auto_repositories_impl.dart';
@@ -9,12 +10,15 @@ import 'features/domain/repositories/auto_repositories.dart';
 import 'features/domain/repositories/weather_repositories.dart';
 import 'features/domain/usecases/get_auto.dart';
 import 'features/domain/usecases/get_weather.dart';
-import 'features/pretentation/auto_location/auto_location_cubit.dart';
+import 'features/domain/usecases/get_weather_current.dart';
 import 'features/pretentation/home/home_cubit.dart';
 
 final locator = GetIt.instance;
 
 void setupLocator() {
+
+  // Location Service
+  locator.registerLazySingleton(() => LocationService());
 
   // external
   locator.registerLazySingleton(() => http.Client());
@@ -39,10 +43,10 @@ void setupLocator() {
 
   locator.registerLazySingleton<GetAutoUseCase>(() => GetAutoUseCase(locator()));
 
-  // Đăng ký các Cubit
-  locator.registerFactory<HomeCubit>(() => HomeCubit(getWeatherUseCase: locator(), locator<GetAutoUseCase>()));
+  locator.registerLazySingleton(() => GetWeatherByCurrentLocation(locator(), locator()));
 
-  locator.registerFactory<AutoLocationCubit>(() => AutoLocationCubit(locator<GetWeatherUseCase>(), getAutoUseCase: locator()));
+  // Đăng ký các Cubit
+  locator.registerFactory<HomeCubit>(() => HomeCubit(getWeatherUseCase: locator(), locator(), locator()));
 
 
 /*  // data source
